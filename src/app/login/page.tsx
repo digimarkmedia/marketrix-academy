@@ -17,23 +17,17 @@ export default function LoginPage() {
     try {
       const supabase = createClient()
       const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
-      if (authError) throw authError
-      // Get profile to check role
-      const { data: profile } = await supabase.from('profiles').select('role,full_name').eq('id', data.user.id).single()
+      if (authError) throw new Error('Invalid email or password')
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single()
       const userRole = profile?.role || 'intern'
       if (role === 'admin' && !['mentor','manager','super_admin'].includes(userRole)) {
+        await supabase.auth.signOut()
         throw new Error('You do not have admin access')
       }
-      if (userRole === 'intern' && role === 'admin') throw new Error('You do not have admin access')
+      localStorage.setItem('mtx_user', JSON.stringify({ name: data.user.email, email: data.user.email, role: userRole }))
       router.push(userRole === 'intern' ? '/dashboard' : '/admin')
     } catch (err: any) {
-      // Demo fallback — works without Supabase Auth setup
-      if (email && password) {
-        localStorage.setItem('mtx_user', JSON.stringify({ name: role==='admin'?'Shahbaz Shaikh':'Aryan Mehta', email, role }))
-        router.push(role === 'admin' ? '/admin' : '/dashboard')
-      } else {
-        setError(err.message || 'Login failed')
-      }
+      setError(err.message || 'Login failed. Check your email and password.')
     }
     setLoading(false)
   }
@@ -48,7 +42,7 @@ export default function LoginPage() {
           <div style={{width:'40px',height:'40px',background:'#EE8256',borderRadius:'10px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'20px',fontWeight:900,color:'#fff'}}>M</div>
           <div><div style={{fontSize:'18px',fontWeight:800,color:'#fff'}}>MarkeTrix</div><div style={{fontSize:'10px',color:'#6B7280',letterSpacing:'.08em',textTransform:'uppercase'}}>Academy</div></div>
         </div>
-        <div style={{fontSize:'32px',fontWeight:800,color:'#fff',lineHeight:1.2,marginBottom:'16px',letterSpacing:'-.02em'}}>Your 28-Day<br/>Marketing<br/><span style={{color:'#EE8256'}}>Career Launch</span></div>
+        <div style={{fontSize:'32px',fontWeight:800,color:'#fff',lineHeight:1.2,marginBottom:'16px'}}>Your 28-Day<br/>Marketing<br/><span style={{color:'#EE8256'}}>Career Launch</span></div>
         <p style={{fontSize:'14px',color:'#9CA3AF',lineHeight:1.7,marginBottom:'40px'}}>Watch lessons, complete real tasks, get instant AI feedback, and track your journey from fresher to client-ready marketer.</p>
         <div style={{display:'flex',gap:'28px'}}>
           {[['247','Active Interns','#EE8256'],['28','Day Program','#F59E0B'],['20','Real Tasks','#7C3AED']].map(([n,l,c])=>(
@@ -64,7 +58,7 @@ export default function LoginPage() {
           </div>
           <div style={{display:'flex',background:'#F6F5F3',borderRadius:'10px',padding:'3px',gap:'2px',marginBottom:'22px'}}>
             {(['intern','admin'] as const).map(r=>(
-              <button key={r} onClick={()=>setRole(r)} style={{flex:1,padding:'8px',borderRadius:'8px',fontSize:'13px',fontWeight:role===r?600:500,background:role===r?'#fff':'transparent',color:role===r?'#111827':'#6B7280',border:'none',cursor:'pointer',boxShadow:role===r?'0 1px 4px rgba(0,0,0,.07)':'none',transition:'all .15s'}}>
+              <button key={r} onClick={()=>setRole(r)} style={{flex:1,padding:'8px',borderRadius:'8px',fontSize:'13px',fontWeight:role===r?600:500,background:role===r?'#fff':'transparent',color:role===r?'#111827':'#6B7280',border:'none',cursor:'pointer',boxShadow:role===r?'0 1px 4px rgba(0,0,0,.07)':'none'}}>
                 {r.charAt(0).toUpperCase()+r.slice(1)}
               </button>
             ))}
@@ -72,7 +66,7 @@ export default function LoginPage() {
           <div style={{display:'flex',flexDirection:'column',gap:'14px',marginBottom:'16px'}}>
             <div>
               <label style={{fontSize:'11px',fontWeight:600,color:'#6B7280',display:'block',marginBottom:'5px',textTransform:'uppercase',letterSpacing:'.04em'}}>Email</label>
-              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder={role==='admin'?'admin@marketrix.in':'aryan@marketrix.in'} style={inp} onFocus={e=>e.currentTarget.style.borderColor='#EE8256'} onBlur={e=>e.currentTarget.style.borderColor='#EBEBEB'}/>
+              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder={role==='admin'?'admin@marketrix.in':'your@email.com'} style={inp} onFocus={e=>e.currentTarget.style.borderColor='#EE8256'} onBlur={e=>e.currentTarget.style.borderColor='#EBEBEB'}/>
             </div>
             <div>
               <label style={{fontSize:'11px',fontWeight:600,color:'#6B7280',display:'block',marginBottom:'5px',textTransform:'uppercase',letterSpacing:'.04em'}}>Password</label>
@@ -80,10 +74,10 @@ export default function LoginPage() {
             </div>
           </div>
           {error&&<div style={{marginBottom:'12px',padding:'10px 14px',background:'#FEF2F2',border:'1px solid #DC262622',borderRadius:'8px',fontSize:'12px',color:'#DC2626'}}>{error}</div>}
-          <button onClick={handleLogin} disabled={loading} style={{width:'100%',padding:'13px',background:loading?'#D4D4D4':'#EE8256',color:'#fff',border:'none',borderRadius:'10px',fontSize:'14px',fontWeight:700,cursor:loading?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'8px'}}>
+          <button onClick={handleLogin} disabled={loading} style={{width:'100%',padding:'13px',background:loading?'#D4D4D4':'#EE8256',color:'#fff',border:'none',borderRadius:'10px',fontSize:'14px',fontWeight:700,cursor:loading?'not-allowed':'pointer'}}>
             {loading?'Signing in...':'Sign In →'}
           </button>
-          <p style={{fontSize:'11px',color:'#9CA3AF',textAlign:'center',marginTop:'14px'}}>Demo mode: enter any email + password to continue</p>
+          <p style={{fontSize:'11px',color:'#9CA3AF',textAlign:'center',marginTop:'14px'}}>Account created by your program admin. Contact them if you cannot log in.</p>
         </div>
       </div>
     </div>
