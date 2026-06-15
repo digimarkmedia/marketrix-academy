@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
