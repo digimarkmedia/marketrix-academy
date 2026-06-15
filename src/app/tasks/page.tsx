@@ -48,7 +48,7 @@ export default function TasksPage() {
     setUrl(''); setNote(''); setResult(null)
   }
 
-  let watchTimer: any = null
+  // watch timer
   const startWatch = () => {
     if (watched || watchTimer) return
     watchTimer = setInterval(() => {
