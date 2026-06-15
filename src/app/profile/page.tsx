@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import AppLayout from '@/components/layout/AppLayout'
@@ -83,4 +82,3 @@ export default function Profile() {
     </AppLayout>
   )
 }
-export const dynamic = 'force-dynamic'

@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 'use client'
+export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -158,4 +157,3 @@ export default function Dashboard() {
     </AppLayout>
   )
 }
-export const dynamic = 'force-dynamic'

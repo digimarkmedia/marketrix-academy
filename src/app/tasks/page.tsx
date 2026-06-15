@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -50,7 +49,7 @@ export default function TasksPage() {
     setUrl(''); setNote(''); setResult(null)
   }
 
-  // watch timer
+  let watchTimer: any = null
   const startWatch = () => {
     if (watched || watchTimer) return
     watchTimer = setInterval(() => {
@@ -330,4 +329,3 @@ export default function TasksPage() {
     </AppLayout>
   )
 }
-export const dynamic = 'force-dynamic'
