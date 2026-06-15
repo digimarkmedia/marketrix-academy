@@ -2,7 +2,5 @@
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
-  experimental: { missingSuspenseWithCSRBailout: false },
-  output: 'standalone',
 }
 module.exports = nextConfig
