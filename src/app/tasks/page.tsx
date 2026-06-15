@@ -328,3 +328,4 @@ export default function TasksPage() {
     </AppLayout>
   )
 }
+export const dynamic = 'force-dynamic'

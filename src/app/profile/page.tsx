@@ -81,3 +81,4 @@ export default function Profile() {
     </AppLayout>
   )
 }
+export const dynamic = 'force-dynamic'

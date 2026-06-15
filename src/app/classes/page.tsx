@@ -51,3 +51,4 @@ export default function Classes() {
     </AppLayout>
   )
 }
+export const dynamic = 'force-dynamic'

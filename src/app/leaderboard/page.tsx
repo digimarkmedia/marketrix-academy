@@ -74,3 +74,4 @@ export default function Leaderboard() {
     </AppLayout>
   )
 }
+export const dynamic = 'force-dynamic'

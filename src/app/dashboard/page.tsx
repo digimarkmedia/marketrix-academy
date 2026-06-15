@@ -156,3 +156,4 @@ export default function Dashboard() {
     </AppLayout>
   )
 }
+export const dynamic = 'force-dynamic'
